@@ -1,4 +1,4 @@
-# dwall
+# 🖼️ wllppr
 
 ## requirements
 ```
@@ -12,12 +12,11 @@ make install
 ```
 
 ## configuration
-The first run of dwall creates a config file at `~/.dwall.conf`
+The first run of wllppr creates a config file at `~/.wllppr.conf`
 ```
-wallpaper_dir : the directory from which it will pick images
-feh_flags     : the flags that will be passed to feh
-delay         : the delay between the changing pics
+pic_dir : the directory from which it will pick images
 ```
 
 ## why i made it?
-Just cos i needed a script that automatically changes the wallpaper
+Just cos i needed a script that changes the
+wallpaper when i tell it to using pywal
