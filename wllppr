@@ -1,12 +1,15 @@
 #!/usr/bin/env bash
 # wllppr
 
-config_file="$HOME/.wllppr.conf"
-files=()
-used_files=()
-file_count=0
+set_variables() {
+        config_file="$HOME/.wllppr.conf"
+        files=()
+        used_files=()
+        file_count=0
+}
 
 get_files() {
+        file_count=0
         # count the number of files
         for item in "$pic_dir"/*; do
                 # if not a directory
@@ -47,9 +50,17 @@ interrupt() {
         }
 }
 
+reload() {
+        set_variables
+        get_config
+        get_files
+}
+
 main() {
         trap 'interrupt' SIGUSR1
+        trap 'reload'    SIGUSR2
 
+        set_variables
         get_config
         get_files
 
