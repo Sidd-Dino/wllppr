@@ -1,73 +1,44 @@
 #!/usr/bin/env bash
+#
 # wllppr
 
-set_variables() {
-        config_file="$HOME/.wllppr.conf"
-        files=()
-        used_files=()
-        file_count=0
-}
+download_img() {
+    # base url
+    base_url="https://source.unsplash.com"
 
-get_files() {
-        file_count=0
-        # count the number of files
-        for item in "$pic_dir"/*; do
-                # if not a directory
-                [[ ! -d $item && "$item" != *"README.md" ]] && {
-                        # add to file list
-                        files+=("$item")
-                        ((file_count++))
-                }
-        done
-}
+    # user stuff
+    url="${base_url}${WLLPPR_USER:+/user/$WLLPPR_USER${WLLPPR_LIKED:+/likes}}"
 
-get_config() {
-        # create a default config if
-        # config doesnt exist
-        [[ ! -a $config_file ]] && {
-                echo "pic_dir=$(xdg-user-dir PICTURES)" > "$config_file"
-        }
+    # featured pics
+    url="${url}${WLLPPR_FEATURED:+/featured}"
 
-        source "$config_file"
-}
+    # image dimension
+    url="${url}${WLLPPR_DIMENSION:+/${WLLPPR_DIMENSION}}"
 
-interrupt() {
-        local num file
-        for((;;)) {
-                # get a random file nummber
-                num="$(( RANDOM % file_count ))"
-                
-                file="${files[$num]}"
-                [[ "${files[*]}" == *$file* &&\
-                   "${used_files[*]}" != *$file* ]] && {
-                                used_files+=( "$file" )
-                                (( ${#files[@]} == ${#used_files[@]} )) && {
-                                        used_files=()
-                                }
-                                wal -qi "$file"
-                                break
-                }
-        }
-}
+    # search tags
+    url="${url}${WLLPPR_SEARCH_TAGS:+/?${WLLPPR_SEARCH_TAGS}}"
 
-reload() {
-        set_variables
-        get_config
-        get_files
+    [[ $url == $base_url ]] && url="${url}/random"
+
+    curl -L "$url" > download.jpeg || {
+        printf '%s\n' "error: could not download the image" >&2
+        exit 1
+    }
 }
 
 main() {
-        trap 'interrupt' SIGUSR1
-        trap 'reload'    SIGUSR2
 
-        set_variables
-        get_config
-        get_files
+    # create cache dir
+    mkdir -p "${XDG_CACHE_HOME:=${HOME}/.cache}/wllppr"
 
+    cd -- "${XDG_CACHE_HOME:=${HOME}/.cache}/wllppr/" || {
+        printf '%s\n' "error: Unable to open cache folder" >&2
+        exit 1
+    }
 
-        while :; do
-                read -rt 9999 <> <(:) || :
-        done
+    download_img
+
+    wal -i ./download.jpeg &
 }
 
 main "$@"
