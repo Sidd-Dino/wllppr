@@ -2,6 +2,12 @@
 #
 # wllppr
 
+date() {
+    # Usage: date "format"
+    # See: 'man strftime' for format.
+    printf "%($1)T\\n" "-1"
+}
+
 download_img() {
     # base url
     base_url="https://source.unsplash.com"
@@ -20,7 +26,7 @@ download_img() {
 
     [[ $url == $base_url ]] && url="${url}/random"
 
-    curl -L "$url" > download.jpeg || {
+    curl -L "$url" --output "$cache_dir/$file_name" || {
         printf '%s\n' "error: could not download the image" >&2
         exit 1
     }
@@ -31,14 +37,20 @@ main() {
     # create cache dir
     mkdir -p "${XDG_CACHE_HOME:=${HOME}/.cache}/wllppr"
 
-    cd -- "${XDG_CACHE_HOME:=${HOME}/.cache}/wllppr/" || {
+    cache_dir="${XDG_CACHE_HOME:=${HOME}/.cache}/wllppr"
+    
+    [[ -d "$cache_dir" ]] || {
         printf '%s\n' "error: Unable to open cache folder" >&2
         exit 1
     }
 
+    rm -- "$cache_dir"/*
+
+    # get new file's name
+    file_name="$(date '%Y%m%H%M%S').jpeg"
     download_img
 
-    wal -i ./download.jpeg &
+    wal -i "$cache_dir/$file_name" &
 }
 
 main "$@"
