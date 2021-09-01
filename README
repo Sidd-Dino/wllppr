@@ -8,9 +8,9 @@ and sets them using `pywal`
 requirements
 ________________________________________________________________________________
 
-bash 4+
+POSIX sh
 curl
-wal
+pywal
 
 
 installation
@@ -34,7 +34,8 @@ export WLLPPR_DIMENSION="1920x1080"
 
 # Use search terms
 export WLLPPR_SEARCH_TAGS="dog,cat,lol" # Comma separated search terms
-
+                                        # to be used with WLLPPR_DIMENSION
+                                        # and WLLPPR_FEATURED
 
 why?
 ________________________________________________________________________________

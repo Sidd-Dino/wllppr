@@ -1,11 +1,19 @@
-#!/usr/bin/env bash
+#!/bin/sh
 #
 # wllppr
 
-date() {
-    # Usage: date "format"
-    # See: 'man strftime' for format.
-    printf "%($1)T\\n" "-1"
+rand_str() {
+    set -f
+
+    tmp=$(dd if=/dev/urandom bs=24 count=1 status=none | base64)
+    
+    ifs=$IFS
+    IFS='/'
+    set -- $tmp
+    IFS=''
+    printf '%s' "$*"
+    IFS=$ifs
+    set +f
 }
 
 download_img() {
@@ -24,8 +32,7 @@ download_img() {
     # search tags
     url="${url}${WLLPPR_SEARCH_TAGS:+/?${WLLPPR_SEARCH_TAGS}}"
 
-    [[ $url == $base_url ]] && url="${url}/random"
-
+    [ $url = $base_url ] && url="${url}/random"
     curl -L "$url" --output "$cache_dir/$file_name" || {
         printf '%s\n' "error: could not download the image" >&2
         exit 1
@@ -39,15 +46,15 @@ main() {
 
     cache_dir="${XDG_CACHE_HOME:=${HOME}/.cache}/wllppr"
     
-    [[ -d "$cache_dir" ]] || {
+    [ -d "$cache_dir" ] || {
         printf '%s\n' "error: Unable to open cache folder" >&2
         exit 1
     }
 
-    rm -- "$cache_dir"/*
+    rm -- "$cache_dir"/* 2>/dev/null
 
     # get new file's name
-    file_name="$(date '%Y%m%H%M%S').jpeg"
+    file_name="$(rand_str).jpeg"
     download_img
 
     wal -i "$cache_dir/$file_name" &
