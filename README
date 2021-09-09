@@ -1,8 +1,8 @@
 wllppr
 ________________________________________________________________________________
 
-A simple script that downloads images from `unsplash.com`
-and sets them using `pywal`
+A script that downloads images from the internet and sets
+them using the same methods used pywal written in POSIX
 
 
 requirements
@@ -10,7 +10,8 @@ ________________________________________________________________________________
 
 POSIX sh
 curl
-pywal
+convert (imagemagick)
+feh
 
 
 installation
@@ -22,23 +23,15 @@ To install place `wllppr` within a directory in $PATH
 configuration
 ________________________________________________________________________________
 
-# User based options
-export WLLPPR_USER="user_name" # Get a certain user's collection
-export WLLPPR_LIKED="true"     # Get the liked images of said user
+# image source
+export WLLPPR_URL="https://source.unsplash.com/1920x1080/?vintage,building"
 
-# Toggle featured images
-export WLLPPR_FEATURED="true"
+# wallpaper setter
+export WLLPPR_SETTER='feh --bg-fill'
 
-# What dimension to use
-export WLLPPR_DIMENSION="1920x1080"
-
-# Use search terms
-export WLLPPR_SEARCH_TAGS="dog,cat,lol" # Comma separated search terms
-                                        # to be used with WLLPPR_DIMENSION
-                                        # and WLLPPR_FEATURED
 
 why?
 ________________________________________________________________________________
 
-Just cos i needed a script that changes the
-wallpaper when i tell it to using pywal
+Me want wallpaper from unsplash
+Hence this shell script
